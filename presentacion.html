@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataByte — Sistema de Estadísticas Escolares</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+<style>
+:root {
+  --db-midnight: #0c1b2e;
+  --db-navy: #1e3a5f;
+  --db-blue: #4a90e2;
+  --db-sky: #7ab8f5;
+  --db-ice: #b8d8f8;
+  --db-ghost: #e8f1fb;
+  --db-white: #f5f7fa;
+  --db-pure: #ffffff;
+  --db-green: #27ae60;
+  --db-red: #e74c3c;
+  --db-amber: #f39c12;
+  --db-text: #c8d6e5;
+  --db-muted: #7f8fa6;
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+}
+
+/* ── Reveal overrides ── */
+.reveal-viewport {
+  background: var(--db-midnight);
+}
+.reveal {
+  font-family: var(--font-body);
+  font-size: 22px;
+  color: var(--db-text);
+}
+.reveal .slides {
+  text-align: left;
+}
+.reveal .slides section {
+  padding: 40px 50px;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+/* ── Backgrounds ── */
+.reveal .slide-background {
+  background: var(--db-midnight);
+}
+section[data-bg="gradient"] {
+  background: linear-gradient(145deg, var(--db-midnight) 0%, #112240 50%, var(--db-navy) 100%) !important;
+}
+section[data-bg="dark"] {
+  background: var(--db-midnight) !important;
+}
+section[data-bg="navy"] {
+  background: linear-gradient(160deg, var(--db-navy) 0%, #1a3050 100%) !important;
+}
+section[data-bg="accent"] {
+  background: linear-gradient(135deg, var(--db-blue) 0%, var(--db-navy) 100%) !important;
+}
+
+/* ── Grid noise overlay for depth ── */
+.reveal .slides section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(74,144,226,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(74,144,226,0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+.reveal .slides section > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Typography ── */
+.reveal h1, .reveal h2, .reveal h3 {
+  font-family: var(--font-display);
+  color: var(--db-pure);
+  text-transform: none;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: 0.5em;
+  font-weight: 400;
+}
+.reveal h1 { font-size: 2.8em; }
+.reveal h2 { font-size: 1.9em; }
+.reveal h3 { font-size: 1.4em; color: var(--db-sky); }
+
+.reveal p, .reveal li {
+  line-height: 1.7;
+  font-weight: 300;
+}
+.reveal strong {
+  color: var(--db-pure);
+  font-weight: 600;
+}
+.reveal em {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--db-sky);
+}
+
+/* ── Links ── */
+.reveal a { color: var(--db-blue); text-decoration: none; }
+
+/* ── The accent line ── */
+.accent-line {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--db-blue), var(--db-sky));
+  border: none;
+  margin: 0 0 1.2em 0;
+  border-radius: 2px;
+}
+
+/* ── Code blocks ── */
+.reveal pre {
+  background: rgba(12, 27, 46, 0.7);
+  border: 1px solid rgba(74, 144, 226, 0.2);
+  border-radius: 10px;
+  padding: 20px 24px;
+  font-size: 0.62em;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(74,144,226,0.1);
+  backdrop-filter: blur(10px);
+  margin: 0.8em 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.reveal code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+.reveal pre code {
+  color: var(--db-text);
+  line-height: 1.6;
+  max-height: 480px;
+}
+/* Syntax highlights */
+.kw { color: #c792ea; }
+.fn { color: #82aaff; }
+.st { color: #c3e88d; }
+.cm { color: #546e7a; font-style: italic; }
+.nb { color: #f78c6c; }
+.op { color: #89ddff; }
+.vr { color: #ffcb6b; }
+
+/* Inline code */
+.reveal :not(pre) > code {
+  background: rgba(74, 144, 226, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: var(--db-sky);
+  font-size: 0.88em;
+}
+
+/* ── Lists ── */
+.reveal ul, .reveal ol {
+  margin-left: 0;
+  padding-left: 1.2em;
+}
+.reveal li {
+  margin-bottom: 0.5em;
+}
+.reveal li::marker {
+  color: var(--db-blue);
+}
+
+/* ── Tables ── */
+.reveal table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 0.85em;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 0.8em 0;
+}
+.reveal table th {
+  background: var(--db-navy);
+  color: var(--db-pure);
+  padding: 12px 18px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9em;
+  letter-spacing: 0.03em;
+}
+.reveal table td {
+  padding: 10px 18px;
+  border-bottom: 1px solid rgba(74,144,226,0.12);
+  color: var(--db-text);
+}
+.reveal table tr:nth-child(even) td {
+  background: rgba(74,144,226,0.04);
+}
+
+/* ── Cards ── */
+.card-grid {
+  display: grid;
+  gap: 16px;
+  margin: 1em 0;
+}
+.card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+.card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.card-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.card-grid.cols-5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+
+.card {
+  background: rgba(30, 58, 95, 0.35);
+  border: 1px solid rgba(74, 144, 226, 0.18);
+  border-radius: 10px;
+  padding: 20px 22px;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s, transform 0.3s;
+}
+.card:hover {
+  border-color: rgba(74, 144, 226, 0.45);
+  transform: translateY(-2px);
+}
+.card .card-label {
+  font-size: 0.7em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--db-muted);
+  margin-bottom: 6px;
+}
+.card .card-value {
+  font-family: var(--font-display);
+  font-size: 1.8em;
+  color: var(--db-pure);
+  line-height: 1.2;
+}
+.card .card-value.blue { color: var(--db-blue); }
+.card .card-value.green { color: var(--db-green); }
+.card .card-value.sky { color: var(--db-sky); }
+
+/* ── Stat pill ── */
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 1em 0;
+}
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(74,144,226,0.1);
+  border: 1px solid rgba(74,144,226,0.2);
+  border-radius: 30px;
+  padding: 8px 18px;
+  font-size: 0.85em;
+}
+.stat-pill .num {
+  font-family: var(--font-display);
+  font-size: 1.3em;
+  color: var(--db-blue);
+  font-weight: 400;
+}
+
+/* ── Badge / Tag ── */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.badge-blue { background: rgba(74,144,226,0.2); color: var(--db-sky); }
+.badge-green { background: rgba(39,174,96,0.2); color: #6deca5; }
+
+/* ── Flowchart-style steps ── */
+.flow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0.8em 0;
+}
+.flow-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  background: rgba(30, 58, 95, 0.3);
+  border-left: 3px solid var(--db-blue);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.88em;
+}
+.flow-step .step-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--db-blue);
+  color: var(--db-pure);
+  border-radius: 50%;
+  font-size: 0.8em;
+  font-weight: 700;
+}
+
+/* ── Two-column layout ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+.two-col.wide-left { grid-template-columns: 1.3fr 1fr; }
+.two-col.wide-right { grid-template-columns: 1fr 1.3fr; }
+
+/* ── Architecture tree ── */
+.file-tree {
+  font-family: var(--font-mono);
+  font-size: 0.78em;
+  line-height: 2;
+  background: rgba(12,27,46,0.6);
+  border: 1px solid rgba(74,144,226,0.15);
+  border-radius: 10px;
+  padding: 18px 24px;
+  color: var(--db-text);
+}
+.file-tree .dir { color: var(--db-blue); font-weight: 600; }
+.file-tree .file { color: var(--db-text); }
+.file-tree .note { color: var(--db-muted); }
+
+/* ── Title slide special ── */
+.title-slide {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.title-slide h1 {
+  font-size: 3.6em;
+  background: linear-gradient(135deg, var(--db-pure) 30%, var(--db-sky) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.15em;
+}
+.title-slide .subtitle {
+  font-size: 1.15em;
+  color: var(--db-muted);
+  font-weight: 300;
+  margin-bottom: 2em;
+}
+.title-slide .brand-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 1em;
+}
+.title-slide .brand-dot {
+  width: 8px; height: 8px;
+  background: var(--db-blue);
+  border-radius: 50%;
+}
+.title-slide .brand-text {
+  font-size: 0.82em;
+  color: var(--db-muted);
+  letter-spacing: 0.05em;
+}
+
+/* ── Logo animation ── */
+.db-logo {
+  font-family: var(--font-display);
+  font-size: 1.2em;
+  color: var(--db-blue);
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.db-logo .logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--db-blue), var(--db-sky));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.7em;
+  color: var(--db-pure);
+}
+
+/* ── Section divider ── */
+.section-divider {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.section-divider h2 {
+  font-size: 2.6em;
+}
+.section-divider p {
+  font-size: 1.1em;
+  color: var(--db-muted);
+  max-width: 500px;
+}
+
+/* ── Slide number ── */
+.reveal .slide-number {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--db-muted);
+  background: transparent;
+  right: 24px;
+  bottom: 16px;
+}
+
+/* ── Progress bar ── */
+.reveal .progress {
+  height: 3px;
+  color: var(--db-blue);
+}
+
+/* ── Callout box ── */
+.callout {
+  background: rgba(74,144,226,0.08);
+  border-left: 3px solid var(--db-blue);
+  padding: 14px 20px;
+  border-radius: 0 8px 8px 0;
+  margin: 0.8em 0;
+  font-size: 0.92em;
+}
+.callout.green { border-left-color: var(--db-green); background: rgba(39,174,96,0.08); }
+
+/* ── Fragment animations ── */
+.reveal .fragment.fade-up {
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal .fragment.fade-up.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ── Responsive small text ── */
+.small { font-size: 0.82em; }
+.xsmall { font-size: 0.72em; color: var(--db-muted); }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.text-center { text-align: center; }
+
+/* ── Decorative corner glow ── */
+.corner-glow::after {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(74,144,226,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── End slide ── */
+.end-slide {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.end-slide h1 {
+  font-size: 4em;
+  background: linear-gradient(135deg, var(--db-pure) 0%, var(--db-sky) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="title-slide corner-glow" data-bg="gradient">
+  <div class="db-logo" style="margin-bottom: 2em;">
+    <span class="logo-icon">DB</span>
+    <span>DataByte</span>
+  </div>
+  <h1>Sistema de Estadísticas Escolares</h1>
+  <p class="subtitle">Escuela San Pascualin</p>
+  <div class="brand-bar">
+    <span class="brand-text">Proyecto Final</span>
+    <span class="brand-dot"></span>
+    <span class="brand-text">Principios de Programación 1</span>
+    <span class="brand-dot"></span>
+    <span class="brand-text">Gabriel — CENFOTEC</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: CONTEXTO ============ -->
+<section class="corner-glow">
+  <h2>Contexto del Proyecto</h2>
+  <hr class="accent-line">
+  <p>La empresa <strong>DataByte</strong> nos contrató para desarrollar una aplicación en Python que permita calcular y mostrar estadísticas de edades para la <strong>Escuela San Pascualin</strong>.</p>
+  <div class="callout" style="margin-top: 1.2em;">
+    <strong>Objetivo:</strong> procesar una muestra de alumnos y extraer métricas clave como edad mayor, edad menor, promedio y mediana, con una interfaz que se sienta profesional y empresarial.
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: REQUERIMIENTOS ============ -->
+<section>
+  <h2>Requerimientos del Cliente</h2>
+  <hr class="accent-line">
+  <div class="card-grid cols-2" style="margin-top:0.5em;">
+    <div class="card">
+      <div class="card-label">Datos</div>
+      <p class="small mt-0">Almacenar <strong>nombre y edad</strong> de los alumnos en un <strong>diccionario</strong></p>
+    </div>
+    <div class="card">
+      <div class="card-label">Estadísticas</div>
+      <p class="small mt-0"><strong>Edad mayor y menor</strong>, <strong>promedio</strong> con un decimal, <strong>mediana</strong> (par e impar)</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Estructura</div>
+      <p class="small mt-0">Usar funciones <code>def</code> para cada operación</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Seguridad</div>
+      <p class="small mt-0">Implementar una <strong>contraseña segura</strong> antes del menú</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Interfaz</div>
+      <p class="small mt-0"><strong>Menú</strong> de opciones con validaciones completas</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Sistema</div>
+      <p class="small mt-0">Mostrar <strong>fecha y hora</strong> al cargar la aplicación</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: SOLUCIÓN ============ -->
+<section>
+  <h2>Solución Entregada</h2>
+  <hr class="accent-line">
+  <p style="margin-bottom:1em;">Dos versiones complementarias — ambas 100% Python estándar, <strong>sin instalar nada adicional</strong>.</p>
+  <div class="card-grid cols-2">
+    <div class="card">
+      <div class="card-label">Versión 1</div>
+      <div class="card-value sky" style="font-size:1.3em;">Consola</div>
+      <p class="small" style="margin-top:8px;"><code>proyecto_final.py</code><br>Menú de texto en terminal. Cumple el 100% de los requerimientos.</p>
+    </div>
+    <div class="card" style="border-color: rgba(39,174,96,0.4);">
+      <div class="card-label">Versión 2</div>
+      <div class="card-value green" style="font-size:1.3em;">Interfaz Gráfica</div>
+      <p class="small" style="margin-top:8px;"><code>proyecto_final_gui.py</code><br>GUI profesional con tkinter + generador automático de reportes HTML y TXT.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: ARQUITECTURA ============ -->
+<section>
+  <h2>Arquitectura del Proyecto</h2>
+  <hr class="accent-line">
+  <div class="two-col">
+    <div>
+      <div class="file-tree">
+        <span class="dir">proyecto_final/</span><br>
+        ├── <span class="file">proyecto_final.py</span> <span class="note">← Consola (286 líneas)</span><br>
+        ├── <span class="file">proyecto_final_gui.py</span> <span class="note">← GUI (1200+ líneas)</span><br>
+        ├── <span class="file">README.md</span> <span class="note">← Documentación</span><br>
+        ├── <span class="file">presentacion.html</span> <span class="note">← Esta presentación</span><br>
+        └── <span class="dir">reportes/</span> <span class="note">← Salida automática</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="file">reporte_*.html</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;└── <span class="file">reporte_*.txt</span>
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-top:0;">3 Capas de Código</h3>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <span class="step-num">1</span>
+          <span><strong>Lógica</strong> — Funciones puras que calculan estadísticas. Reutilizables en cualquier interfaz.</span>
+        </div>
+        <div class="flow-step">
+          <span class="step-num">2</span>
+          <span><strong>Interfaz</strong> — Frames de tkinter que presentan pantallas al usuario.</span>
+        </div>
+        <div class="flow-step">
+          <span class="step-num">3</span>
+          <span><strong>Reportes</strong> — Generadores HTML y TXT que persisten los resultados.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: TECNOLOGÍAS ============ -->
+<section>
+  <h2>Tecnologías Utilizadas</h2>
+  <hr class="accent-line">
+  <table>
+    <thead>
+      <tr><th>Tecnología</th><th>Propósito</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Python 3</strong></td><td>Lenguaje base del proyecto</td></tr>
+      <tr><td><strong>tkinter + ttk</strong></td><td>Interfaz gráfica (biblioteca estándar)</td></tr>
+      <tr><td><strong>datetime</strong></td><td>Fecha y hora del sistema</td></tr>
+      <tr><td><strong>os</strong></td><td>Creación de carpetas y manejo de archivos</td></tr>
+      <tr><td><strong>webbrowser</strong></td><td>Apertura automática del reporte HTML</td></tr>
+      <tr><td><strong>random</strong></td><td>Generación de datos de ejemplo</td></tr>
+      <tr><td><strong>HTML + CSS</strong></td><td>Formato del reporte empresarial</td></tr>
+    </tbody>
+  </table>
+  <div class="callout green" style="margin-top:0.6em;">
+    <strong>Cero librerías externas.</strong> Todo funciona con la instalación estándar de Python.
+  </div>
+</section>
+
+<!-- ============ SECTION DIVIDER: LÓGICA ============ -->
+<section class="section-divider" data-bg="accent">
+  <h2>Funciones de Lógica</h2>
+  <p>El cerebro de la aplicación: funciones puras, reutilizables en consola y GUI.</p>
+</section>
+
+<!-- ============ SLIDE 7: VALIDAR CONTRASEÑA ============ -->
+<section>
+  <h2>Validación de Contraseña</h2>
+  <hr class="accent-line">
+  <div class="two-col wide-left">
+    <div>
+<pre><code><span class="kw">def</span> <span class="fn">validar_contrasena</span>(clave):
+    checklist = {
+        <span class="st">"largo"</span>: <span class="fn">len</span>(clave) >= <span class="nb">8</span>,
+        <span class="st">"mayus"</span>: <span class="nb">False</span>, <span class="st">"minus"</span>: <span class="nb">False</span>,
+        <span class="st">"numero"</span>: <span class="nb">False</span>, <span class="st">"simbolo"</span>: <span class="nb">False</span>,
+    }
+    <span class="kw">for</span> letra <span class="kw">in</span> clave:
+        <span class="kw">if</span> letra.isupper(): checklist[<span class="st">"mayus"</span>] = <span class="nb">True</span>
+        <span class="kw">elif</span> letra.islower(): checklist[<span class="st">"minus"</span>] = <span class="nb">True</span>
+        <span class="kw">elif</span> letra.isdigit(): checklist[<span class="st">"numero"</span>] = <span class="nb">True</span>
+        <span class="kw">elif</span> letra <span class="kw">in</span> <span class="st">"!@#$%^&*()"</span>: checklist[<span class="st">"simbolo"</span>] = <span class="nb">True</span></code></pre>
+    </div>
+    <div>
+      <div class="callout">
+        <strong>Diseño:</strong> Iteramos carácter por carácter con métodos nativos de string (<code>isupper</code>, <code>isdigit</code>), sin expresiones regulares.
+      </div>
+      <p class="small" style="margin-top:1em;">Apropiado para el nivel del curso y fácil de explicar en la presentación.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: EDAD MAYOR ============ -->
+<section>
+  <h2>Obtener Edad Mayor</h2>
+  <hr class="accent-line">
+  <div class="two-col wide-left">
+    <div>
+<pre><code><span class="kw">def</span> <span class="fn">obtener_edad_mayor</span>(alumnos):
+    mayor = <span class="nb">-1</span>
+    nombre_mayor = <span class="st">""</span>
+    <span class="kw">for</span> nombre <span class="kw">in</span> alumnos:
+        <span class="kw">if</span> alumnos[nombre] > mayor:
+            mayor = alumnos[nombre]
+            nombre_mayor = nombre
+    <span class="kw">return</span> nombre_mayor, mayor</code></pre>
+    </div>
+    <div>
+      <div class="callout">
+        <strong>Concepto clave:</strong> En lugar de usar <code>max()</code> built-in, implementamos el algoritmo manualmente.
+      </div>
+      <p class="small" style="margin-top:1em;">Demuestra comprensión de cómo funciona internamente y devuelve <strong>dos datos</strong> (nombre y edad) al mismo tiempo con <code>return</code> múltiple.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9: PROMEDIO ============ -->
+<section>
+  <h2>Cálculo del Promedio</h2>
+  <hr class="accent-line">
+  <div class="two-col wide-left">
+    <div>
+<pre><code><span class="kw">def</span> <span class="fn">calcular_promedio</span>(alumnos):
+    suma = <span class="nb">0</span>
+    cantidad = <span class="nb">0</span>
+    <span class="kw">for</span> nombre <span class="kw">in</span> alumnos:
+        suma += alumnos[nombre]
+        cantidad += <span class="nb">1</span>
+    promedio = suma / cantidad
+    <span class="kw">return</span> <span class="fn">round</span>(promedio, <span class="nb">1</span>)</code></pre>
+    </div>
+    <div>
+      <div class="callout">
+        <strong>¿Por qué <code>round(promedio, 1)</code>?</strong> El cliente pidió explícitamente "un decimal".
+      </div>
+      <div class="callout" style="margin-top:0.6em;">
+        <strong>¿Por qué no <code>sum()</code> ni <code>len()</code>?</strong> Implementar manualmente enseña el patrón de acumulador, fundamental en programación.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: MEDIANA ============ -->
+<section>
+  <h2>Cálculo de la Mediana</h2>
+  <hr class="accent-line">
+<pre><code><span class="kw">def</span> <span class="fn">calcular_mediana</span>(alumnos):
+    edades = []
+    <span class="kw">for</span> nombre <span class="kw">in</span> alumnos:
+        edades.append(alumnos[nombre])
+    edades.sort()
+
+    cantidad = <span class="fn">len</span>(edades)
+    mitad = cantidad // <span class="nb">2</span>
+
+    <span class="kw">if</span> cantidad % <span class="nb">2</span> == <span class="nb">1</span>:
+        <span class="kw">return</span> edades[mitad]             <span class="cm"># Caso impar: valor central</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> (edades[mitad - <span class="nb">1</span>] + edades[mitad]) / <span class="nb">2</span>  <span class="cm"># Caso par</span></code></pre>
+  <p class="small" style="margin-top:0.5em;"><strong>El truco:</strong> <code>cantidad % 2 == 1</code> detecta cantidad impar. En ese caso tomamos el elemento central directo. En caso par, promediamos los dos centrales.</p>
+</section>
+
+<!-- ============ SLIDE 11: EJEMPLO MEDIANA ============ -->
+<section>
+  <h2>Ejemplo: Mediana en Acción</h2>
+  <hr class="accent-line">
+  <div class="card-grid cols-2" style="margin-top:1em;">
+    <div class="card">
+      <div class="card-label">Muestra impar (n=5)</div>
+      <p class="small mt-0" style="font-family:var(--font-mono);">[7, 8, <strong style="color:var(--db-blue);font-size:1.3em;">9</strong>, 10, 12]</p>
+      <p class="small">mitad = 5 // 2 = <strong>2</strong></p>
+      <p class="small">edades[2] = 9</p>
+      <div class="card-value blue" style="margin-top:8px;">Mediana: 9</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Muestra par (n=4)</div>
+      <p class="small mt-0" style="font-family:var(--font-mono);">[7, <strong style="color:var(--db-green);">8</strong>, <strong style="color:var(--db-green);">10</strong>, 12]</p>
+      <p class="small">mitad = 4 // 2 = <strong>2</strong></p>
+      <p class="small">(8 + 10) / 2 = 9.0</p>
+      <div class="card-value green" style="margin-top:8px;">Mediana: 9.0</div>
+    </div>
+  </div>
+  <p class="small" style="margin-top:1em;">La diferencia entre <code>9</code> (entero) y <code>9.0</code> (flotante) es correcta — Python infiere tipos según la operación de división.</p>
+</section>
+
+<!-- ============ SECTION DIVIDER: GUI ============ -->
+<section class="section-divider" data-bg="accent">
+  <h2>Interfaz Gráfica</h2>
+  <p>5 pantallas, navegación fluida, validaciones en tiempo real.</p>
+</section>
+
+<!-- ============ SLIDE 12: FRAME SYSTEM ============ -->
+<section>
+  <h2>Arquitectura de la GUI</h2>
+  <hr class="accent-line">
+  <div class="two-col wide-left">
+    <div>
+<pre><code>frames = {}
+
+<span class="kw">def</span> <span class="fn">mostrar_frame</span>(nombre):
+    <span class="kw">for</span> key <span class="kw">in</span> frames:
+        frames[key].pack_forget()
+    frames[nombre].pack(fill=<span class="st">"both"</span>, expand=<span class="nb">True</span>)</code></pre>
+      <div class="callout" style="margin-top:1em;">
+        <strong>Patrón:</strong> <em>State Machine UI</em> — cada "pantalla" es un Frame separado. Cambiar de pantalla = ocultar todos, mostrar uno.
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-top:0;">Las 5 Pantallas</h3>
+      <div class="flow-steps">
+        <div class="flow-step"><span class="step-num">1</span><span><strong>Bienvenida</strong> — Logo + reloj en vivo</span></div>
+        <div class="flow-step"><span class="step-num">2</span><span><strong>Registro</strong> — Contraseña con validación en vivo</span></div>
+        <div class="flow-step"><span class="step-num">3</span><span><strong>Configuración</strong> — Tamaño de la muestra</span></div>
+        <div class="flow-step"><span class="step-num">4</span><span><strong>Ingreso</strong> — Formulario + tabla en vivo</span></div>
+        <div class="flow-step"><span class="step-num">5</span><span><strong>Dashboard</strong> — Menú lateral + estadísticas</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13: ESTILOS ============ -->
+<section>
+  <h2>Sistema de Estilos Profesional</h2>
+  <hr class="accent-line">
+  <div class="two-col">
+    <div>
+<pre><code><span class="cm"># Paleta corporativa DataByte</span>
+COLOR_PRIMARIO = <span class="st">"#1e3a5f"</span>   <span class="cm"># Azul oscuro</span>
+COLOR_ACENTO   = <span class="st">"#4a90e2"</span>   <span class="cm"># Azul claro</span>
+COLOR_FONDO    = <span class="st">"#f5f7fa"</span>   <span class="cm"># Gris suave</span>
+COLOR_EXITO    = <span class="st">"#27ae60"</span>   <span class="cm"># Verde</span>
+COLOR_ERROR    = <span class="st">"#e74c3c"</span>   <span class="cm"># Rojo</span>
+
+estilo = ttk.Style()
+estilo.theme_use(<span class="st">"clam"</span>)</code></pre>
+    </div>
+    <div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1em;">
+        <div style="width:50px;height:50px;border-radius:8px;background:#1e3a5f;"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:#4a90e2;"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:#f5f7fa;"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:#27ae60;"></div>
+        <div style="width:50px;height:50px;border-radius:8px;background:#e74c3c;"></div>
+      </div>
+      <div class="callout">
+        <strong>Decisión:</strong> Usamos el tema <code>"clam"</code> de tkinter en vez del default de Windows. Luce más moderno y permite personalización uniforme.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: RELOJ ============ -->
+<section>
+  <h2>Reloj en Vivo</h2>
+  <hr class="accent-line">
+  <div class="two-col wide-left">
+    <div>
+<pre><code><span class="kw">def</span> <span class="fn">actualizar_reloj</span>():
+    ahora = datetime.now()
+    reloj_var.set(ahora.strftime(<span class="st">"%H:%M:%S"</span>))
+    fecha_var.set(ahora.strftime(<span class="st">"%A, %d de %B del %Y"</span>))
+    ventana.after(<span class="nb">1000</span>, actualizar_reloj)</code></pre>
+    </div>
+    <div>
+      <div class="callout">
+        <strong>Concepto clave:</strong> <code>ventana.after(1000, funcion)</code> programa la ejecución en 1 segundo <strong>sin bloquear</strong> la interfaz.
+      </div>
+      <div class="callout" style="margin-top:0.6em;border-left-color:var(--db-red);background:rgba(231,76,60,0.08);">
+        Nunca usar <code>time.sleep()</code> en GUI — congelaría la pantalla.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15: VALIDACIÓN PWD ============ -->
+<section>
+  <h2>Validación en Tiempo Real</h2>
+  <hr class="accent-line">
+<pre><code>entry_pwd.bind(<span class="st">"&lt;KeyRelease&gt;"</span>, actualizar_checklist)
+
+<span class="kw">def</span> <span class="fn">actualizar_checklist</span>(evento=<span class="nb">None</span>):
+    clave = entry_pwd.get()
+    _, _, checklist = validar_contrasena(clave)
+
+    <span class="kw">for</span> clave_c <span class="kw">in</span> checklist:
+        <span class="kw">if</span> checklist[clave_c]:
+            check_labels[clave_c].configure(fg=COLOR_EXITO)   <span class="cm"># Verde</span>
+        <span class="kw">else</span>:
+            check_labels[clave_c].configure(fg=COLOR_ERROR)   <span class="cm"># Rojo</span></code></pre>
+  <p class="small">El usuario ve <strong>en verde</strong> los requisitos cumplidos al instante, sin presionar ningún botón. Cada tecla dispara la re-validación.</p>
+</section>
+
+<!-- ============ SLIDE 16: SEGURIDAD ============ -->
+<section>
+  <h2>Seguridad: Intentos Limitados</h2>
+  <hr class="accent-line">
+  <div class="two-col wide-left">
+    <div>
+<pre><code><span class="kw">def</span> <span class="fn">intentar_login</span>():
+    <span class="kw">global</span> intentos_restantes
+    ingresado = entry_pwd.get()
+
+    <span class="kw">if</span> ingresado == clave_guardada:
+        mostrar_frame(<span class="st">"muestra"</span>)
+        <span class="kw">return</span>
+
+    intentos_restantes -= <span class="nb">1</span>
+    <span class="kw">if</span> intentos_restantes <= <span class="nb">0</span>:
+        messagebox.showerror(<span class="st">"Acceso bloqueado"</span>,
+            <span class="st">"Demasiados intentos fallidos."</span>)
+        ventana.destroy()</code></pre>
+    </div>
+    <div>
+      <div class="callout">
+        <strong>Práctica de seguridad real:</strong> 3 intentos máximo. Al llegar a 0, la aplicación se cierra.
+      </div>
+      <p class="small" style="margin-top:1em;">Simula el comportamiento de sistemas bancarios y empresariales.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17: TABLA DE ALUMNOS ============ -->
+<section>
+  <h2>Ingreso de Alumnos con Tabla</h2>
+  <hr class="accent-line">
+<pre><code>tree_alumnos = ttk.Treeview(panel_tabla,
+                            columns=(<span class="st">"num"</span>, <span class="st">"nombre"</span>, <span class="st">"edad"</span>),
+                            show=<span class="st">"headings"</span>)
+
+<span class="kw">def</span> <span class="fn">agregar_alumno</span>():
+    nombre = entry_nombre.get().strip()
+    edad = <span class="fn">int</span>(edad_var.get())
+    <span class="cm"># Validaciones ...</span>
+    alumnos[nombre] = edad
+    tree_alumnos.insert(<span class="st">""</span>, <span class="st">"end"</span>, values=(num, nombre, edad))</code></pre>
+  <p class="small"><code>Treeview</code> es el widget de tabla de tkinter. Al insertar una fila, aparece instantáneamente sin recargar nada.</p>
+</section>
+
+<!-- ============ SLIDE 18: TECLADO ============ -->
+<section>
+  <h2>Navegación por Teclado</h2>
+  <hr class="accent-line">
+<pre><code>entry_pwd.bind(<span class="st">"&lt;Return&gt;"</span>, enter_pwd_registro)
+entry_muestra.bind(<span class="st">"&lt;Return&gt;"</span>, <span class="kw">lambda</span> e: confirmar_tamano())
+entry_nombre.bind(<span class="st">"&lt;Return&gt;"</span>, enter_nombre_alumno)
+spin_edad.bind(<span class="st">"&lt;Return&gt;"</span>, enter_edad_alumno)</code></pre>
+  <div class="callout" style="margin-top:1em;">
+    <strong>UX empresarial:</strong> el usuario puede completar todos los formularios sin soltar el teclado. <strong>ENTER</strong> equivale al botón principal de cada pantalla.
+  </div>
+</section>
+
+<!-- ============ SLIDE 19: DASHBOARD ============ -->
+<section>
+  <h2>Dashboard Dinámico</h2>
+  <hr class="accent-line">
+  <div class="two-col wide-left">
+    <div>
+<pre><code><span class="kw">def</span> <span class="fn">limpiar_contenido</span>():
+    <span class="kw">for</span> widget <span class="kw">in</span> panel_contenido.winfo_children():
+        widget.destroy()
+
+<span class="kw">def</span> <span class="fn">ver_resumen</span>():
+    limpiar_contenido()
+    <span class="cm"># Construye 5 cards con estadísticas</span>
+
+<span class="kw">def</span> <span class="fn">crear_card</span>(parent, titulo, valor, color):
+    card = Frame(parent, bg=COLOR_BLANCO,
+                 bd=<span class="nb">1</span>, relief=<span class="st">"solid"</span>)
+    Label(card, text=titulo, ...).pack()
+    Label(card, text=valor, fg=color,
+          font=(<span class="st">"Segoe UI"</span>, <span class="nb">22</span>, <span class="st">"bold"</span>)).pack()</code></pre>
+    </div>
+    <div>
+      <p>Cada sección del dashboard <strong>destruye</strong> el contenido anterior y <strong>dibuja</strong> el nuevo.</p>
+      <div class="callout" style="margin-top:1em;">
+        Patrón clásico de dashboards <em>SPA</em> (Single Page Application). Las cards muestran título pequeño + valor grande — estilo Google Analytics y Stripe.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION DIVIDER: REPORTES ============ -->
+<section class="section-divider" data-bg="accent">
+  <h2>Reportes</h2>
+  <p>Generación automática en HTML y TXT con timestamp único.</p>
+</section>
+
+<!-- ============ SLIDE 20: REPORTE HTML ============ -->
+<section>
+  <h2>Reporte HTML Profesional</h2>
+  <hr class="accent-line">
+  <div class="two-col">
+    <div>
+<pre><code><span class="kw">def</span> <span class="fn">generar_reporte_html</span>():
+    html = <span class="st">"""&lt;!DOCTYPE html&gt;
+    &lt;html lang="es"&gt;
+    &lt;head&gt;&lt;style&gt;
+      header { background: linear-gradient(
+        135deg, #1e3a5f, #4a90e2); }
+      .card { border-left:
+        4px solid #4a90e2; }
+      table th { background: #1e3a5f;
+        color: white; }
+    &lt;/style&gt;&lt;/head&gt;
+    &lt;body&gt;...&lt;/body&gt;
+    &lt;/html&gt;"""</span>
+    <span class="kw">return</span> html</code></pre>
+    </div>
+    <div>
+      <h3 style="margin-top:0;">¿Por qué HTML y no PDF?</h3>
+      <ul class="small">
+        <li><strong>Cero librerías</strong> — <code>reportlab</code>/<code>fpdf</code> requieren pip</li>
+        <li><strong>Look profesional</strong> con CSS (gradientes, cards, tablas)</li>
+        <li><strong>Ctrl+P</strong> → "Guardar como PDF" desde el navegador</li>
+        <li><strong>Universal</strong> — cualquier sistema lo abre</li>
+      </ul>
+      <p class="small" style="margin-top:0.8em;">También generamos un <strong>TXT plano</strong> como respaldo compatible.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 21: GUARDADO ============ -->
+<section>
+  <h2>Guardado con Timestamp</h2>
+  <hr class="accent-line">
+<pre><code><span class="kw">def</span> <span class="fn">guardar_reporte</span>(contenido, extension):
+    ahora = datetime.now()
+    nombre = <span class="st">"reporte_"</span> + ahora.strftime(<span class="st">"%Y-%m-%d_%H-%M-%S"</span>) + <span class="st">"."</span> + extension
+    ruta = os.path.join(<span class="st">"reportes"</span>, nombre)
+
+    archivo = <span class="fn">open</span>(ruta, <span class="st">"w"</span>, encoding=<span class="st">"utf-8"</span>)
+    archivo.write(contenido)
+    archivo.close()
+    <span class="kw">return</span> ruta</code></pre>
+  <div class="callout" style="margin-top:0.8em;">
+    Cada reporte tiene <strong>nombre único</strong> basado en fecha/hora. Nunca se sobrescriben — todos los reportes históricos se conservan automáticamente.
+  </div>
+</section>
+
+<!-- ============ SLIDE 22: VALIDACIONES ============ -->
+<section>
+  <h2>Validaciones Implementadas</h2>
+  <hr class="accent-line">
+  <table>
+    <thead>
+      <tr><th>Entrada</th><th>Validaciones</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Contraseña</strong></td><td>8+ caracteres, mayúscula, minúscula, número, símbolo</td></tr>
+      <tr><td><strong>Confirmación</strong></td><td>Debe coincidir con la contraseña original</td></tr>
+      <tr><td><strong>Intentos login</strong></td><td>Máximo 3, luego se bloquea la aplicación</td></tr>
+      <tr><td><strong>Tamaño muestra</strong></td><td>Entero positivo, máximo 100</td></tr>
+      <tr><td><strong>Nombre alumno</strong></td><td>No vacío, sin duplicados</td></tr>
+      <tr><td><strong>Edad</strong></td><td>Rango 4–18 años (edad escolar)</td></tr>
+      <tr><td><strong>Opción menú</strong></td><td>Rango 1–6 en versión consola</td></tr>
+    </tbody>
+  </table>
+  <p class="small" style="margin-top:0.6em;">Todas las validaciones muestran mensajes de error específicos en español.</p>
+</section>
+
+<!-- ============ SLIDE 23: FLUJO COMPLETO ============ -->
+<section>
+  <h2>Flujo Completo de Uso</h2>
+  <hr class="accent-line">
+  <div class="two-col">
+    <div>
+      <div class="flow-steps">
+        <div class="flow-step"><span class="step-num">1</span><span>Pantalla de bienvenida con reloj en vivo</span></div>
+        <div class="flow-step"><span class="step-num">2</span><span>ENTER o clic en "Iniciar sesión"</span></div>
+        <div class="flow-step"><span class="step-num">3</span><span>Crear contraseña segura (validada en vivo)</span></div>
+        <div class="flow-step"><span class="step-num">4</span><span>Acceder con la contraseña (3 intentos)</span></div>
+        <div class="flow-step"><span class="step-num">5</span><span>Definir tamaño de la muestra</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="flow-steps">
+        <div class="flow-step"><span class="step-num">6</span><span>Ingresar alumnos (manual o demo)</span></div>
+        <div class="flow-step"><span class="step-num">7</span><span>Explorar estadísticas en el dashboard</span></div>
+        <div class="flow-step"><span class="step-num">8</span><span>Generar reporte HTML/TXT</span></div>
+        <div class="flow-step"><span class="step-num">9</span><span>El HTML se abre automáticamente</span></div>
+        <div class="flow-step"><span class="step-num">10</span><span>Ctrl+P → guardar como PDF</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 24: DECISIONES ============ -->
+<section>
+  <h2>Decisiones de Diseño</h2>
+  <hr class="accent-line">
+  <div class="card-grid cols-3" style="margin-top:0.5em;">
+    <div class="card">
+      <div class="card-label">¿Por qué tkinter?</div>
+      <p class="small mt-0">Viene incluido en Python. PyQt requiere instalación pesada y licenciamiento.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">¿Por qué sin clases?</div>
+      <p class="small mt-0">El curso enseña paradigma <strong>procedural</strong>. Las clases se introducen en cursos posteriores.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">¿Por qué HTML?</div>
+      <p class="small mt-0">Cero dependencias externas. El profesor puede ejecutar sin configurar entorno.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 25: CÓMO REPLICAR ============ -->
+<section>
+  <h2>Cómo Replicar el Proyecto</h2>
+  <hr class="accent-line">
+  <div class="flow-steps" style="max-width:700px;">
+    <div class="flow-step"><span class="step-num">1</span><span>Crear <code>proyecto_final.py</code> con las 5 funciones principales de lógica</span></div>
+    <div class="flow-step"><span class="step-num">2</span><span>Probar en consola con casos par e impar para validar la mediana</span></div>
+    <div class="flow-step"><span class="step-num">3</span><span>Crear <code>proyecto_final_gui.py</code> reutilizando las funciones de lógica</span></div>
+    <div class="flow-step"><span class="step-num">4</span><span>Construir los 5 frames de tkinter uno a la vez, probando cada pantalla</span></div>
+    <div class="flow-step"><span class="step-num">5</span><span>Añadir el generador de reportes HTML y TXT</span></div>
+    <div class="flow-step"><span class="step-num">6</span><span>Testear el flujo completo end-to-end</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 26: MÉTRICAS ============ -->
+<section>
+  <h2>Métricas del Proyecto</h2>
+  <hr class="accent-line">
+  <div class="card-grid cols-4" style="margin-top:0.5em;">
+    <div class="card text-center">
+      <div class="card-value blue">286</div>
+      <div class="card-label">líneas consola</div>
+    </div>
+    <div class="card text-center">
+      <div class="card-value blue">1200+</div>
+      <div class="card-label">líneas GUI</div>
+    </div>
+    <div class="card text-center">
+      <div class="card-value sky">11</div>
+      <div class="card-label">funciones</div>
+    </div>
+    <div class="card text-center">
+      <div class="card-value sky">5</div>
+      <div class="card-label">pantallas</div>
+    </div>
+  </div>
+  <div class="card-grid cols-4" style="margin-top:0;">
+    <div class="card text-center">
+      <div class="card-value green">2</div>
+      <div class="card-label">formatos reporte</div>
+    </div>
+    <div class="card text-center">
+      <div class="card-value green">7</div>
+      <div class="card-label">validaciones</div>
+    </div>
+    <div class="card text-center" style="border-color:rgba(39,174,96,0.5);">
+      <div class="card-value green">0</div>
+      <div class="card-label">librerías externas</div>
+    </div>
+    <div class="card text-center" style="border-color:rgba(39,174,96,0.5);">
+      <div class="card-value green">100%</div>
+      <div class="card-label">requerimientos</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 27: EXTRAS ============ -->
+<section>
+  <h2>Extras que Superan el Requerimiento</h2>
+  <hr class="accent-line">
+  <div class="two-col">
+    <div>
+      <ul class="small">
+        <li>Interfaz gráfica profesional completa</li>
+        <li>Reloj en tiempo real</li>
+        <li>Validación de contraseña visual en vivo</li>
+        <li>Dashboard con cards empresariales</li>
+        <li>Tabla de alumnos en vivo</li>
+      </ul>
+    </div>
+    <div>
+      <ul class="small">
+        <li>Generación automática de reportes HTML/TXT</li>
+        <li>Conversión a PDF desde navegador</li>
+        <li>Navegación por teclado (ENTER)</li>
+        <li>Botón de datos de ejemplo</li>
+        <li>Timestamp automático en reportes</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 28: LECCIONES ============ -->
+<section>
+  <h2>Lecciones Aprendidas</h2>
+  <hr class="accent-line">
+  <div class="two-col">
+    <div>
+      <h3>Técnicas</h3>
+      <ul class="small">
+        <li>Separar lógica de interfaz permite <strong>reutilizar código</strong></li>
+        <li>tkinter puede verse moderno con el tema y paleta correctos</li>
+        <li><code>after()</code> es la forma correcta de tareas periódicas en GUI</li>
+        <li><code>bind("&lt;Return&gt;", ...)</code> mejora la UX sin complejidad extra</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Conceptuales</h3>
+      <ul class="small">
+        <li>Los diccionarios son ideales para <strong>relacionar datos</strong> (nombre → edad)</li>
+        <li>La mediana requiere <strong>ordenar primero</strong> y decidir par/impar</li>
+        <li>Validaciones en tiempo real mejoran la <strong>experiencia del usuario</strong></li>
+        <li>HTML + CSS da mejor resultado visual que muchas librerías PDF</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 29: DEMO ============ -->
+<section class="section-divider" data-bg="navy">
+  <h2>Demostración en Vivo</h2>
+  <hr class="accent-line" style="margin:0 auto 1em;">
+  <div class="flow-steps" style="max-width:480px;text-align:left;">
+    <div class="flow-step"><span class="step-num">1</span><span>Pantalla de bienvenida con reloj</span></div>
+    <div class="flow-step"><span class="step-num">2</span><span>Registro con validación visual</span></div>
+    <div class="flow-step"><span class="step-num">3</span><span>Login con intentos limitados</span></div>
+    <div class="flow-step"><span class="step-num">4</span><span>Ingreso manual + datos demo</span></div>
+    <div class="flow-step"><span class="step-num">5</span><span>Dashboard con estadísticas</span></div>
+    <div class="flow-step"><span class="step-num">6</span><span>Generación de reporte HTML</span></div>
+    <div class="flow-step"><span class="step-num">7</span><span>Conversión a PDF en navegador</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 30: CONCLUSIÓN ============ -->
+<section>
+  <h2>Conclusión</h2>
+  <hr class="accent-line">
+  <p style="font-size:1.05em;max-width:700px;">El proyecto cumple <strong>al 100% los requerimientos</strong> del cliente DataByte para la Escuela San Pascualin, y añade una capa profesional de interfaz y reportería que hace la solución <em>lista para producción</em>.</p>
+  <div class="card-grid cols-4" style="margin-top:1.5em;">
+    <div class="card text-center">
+      <div class="card-value sky" style="font-size:1.2em;">Legible</div>
+      <p class="xsmall mt-0">Nombres en español, comentarios claros</p>
+    </div>
+    <div class="card text-center">
+      <div class="card-value sky" style="font-size:1.2em;">Mantenible</div>
+      <p class="xsmall mt-0">Funciones pequeñas, una responsabilidad</p>
+    </div>
+    <div class="card text-center">
+      <div class="card-value sky" style="font-size:1.2em;">Portable</div>
+      <p class="xsmall mt-0">Cero dependencias externas</p>
+    </div>
+    <div class="card text-center">
+      <div class="card-value sky" style="font-size:1.2em;">Extensible</div>
+      <p class="xsmall mt-0">Lógica separada de interfaz</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 31: GRACIAS ============ -->
+<section class="end-slide" data-bg="gradient">
+  <div class="db-logo" style="margin-bottom:2em;">
+    <span class="logo-icon">DB</span>
+    <span>DataByte</span>
+  </div>
+  <h1>Gracias</h1>
+  <p style="color:var(--db-muted);font-size:1.1em;margin-bottom:2em;">¿Preguntas?</p>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+    <span class="brand-text" style="font-size:0.9em;color:var(--db-text);">Gabriel — CENFOTEC</span>
+    <span class="brand-text" style="font-size:0.82em;color:var(--db-muted);">Proyecto Final — Principios de Programación 1</span>
+    <span class="brand-text" style="font-size:0.82em;color:var(--db-muted);">Fecha de entrega: 21 de abril, 2026</span>
+  </div>
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+<script>
+Reveal.initialize({
+  width: 1100,
+  height: 700,
+  margin: 0,
+  hash: true,
+  slideNumber: 'c/t',
+  showSlideNumber: 'all',
+  transition: 'slide',
+  transitionSpeed: 'default',
+  backgroundTransition: 'fade',
+  center: false,
+  controls: true,
+  controlsLayout: 'edges',
+  progress: true,
+  keyboard: true,
+  overview: true,
+});
+
+// Apply data-bg attributes as inline backgrounds
+document.querySelectorAll('section[data-bg]').forEach(function(slide) {
+  var bg = slide.getAttribute('data-bg');
+  if (bg === 'gradient') {
+    slide.style.background = 'linear-gradient(145deg, #0c1b2e 0%, #112240 50%, #1e3a5f 100%)';
+  } else if (bg === 'dark') {
+    slide.style.background = '#0c1b2e';
+  } else if (bg === 'navy') {
+    slide.style.background = 'linear-gradient(160deg, #1e3a5f 0%, #1a3050 100%)';
+  } else if (bg === 'accent') {
+    slide.style.background = 'linear-gradient(135deg, #4a90e2 0%, #1e3a5f 100%)';
+  }
+});
+</script>
+</body>
+</html>

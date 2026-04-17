@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataByte — Presentación 10 min</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+<style>
+:root {
+  --db-midnight: #0c1b2e;
+  --db-navy: #1e3a5f;
+  --db-blue: #4a90e2;
+  --db-sky: #7ab8f5;
+  --db-ice: #b8d8f8;
+  --db-ghost: #e8f1fb;
+  --db-white: #f5f7fa;
+  --db-pure: #ffffff;
+  --db-green: #27ae60;
+  --db-red: #e74c3c;
+  --db-amber: #f39c12;
+  --db-text: #c8d6e5;
+  --db-muted: #7f8fa6;
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+}
+
+.reveal-viewport { background: var(--db-midnight); }
+.reveal {
+  font-family: var(--font-body);
+  font-size: 22px;
+  color: var(--db-text);
+}
+.reveal .slides { text-align: left; }
+.reveal .slides section {
+  padding: 40px 50px;
+  box-sizing: border-box;
+  height: 100%;
+}
+.reveal .slide-background { background: var(--db-midnight); }
+
+.reveal .slides section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(74,144,226,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(74,144,226,0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+.reveal .slides section > * { position: relative; z-index: 1; }
+
+.reveal h1, .reveal h2, .reveal h3 {
+  font-family: var(--font-display);
+  color: var(--db-pure);
+  text-transform: none;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: 0.5em;
+  font-weight: 400;
+}
+.reveal h1 { font-size: 2.8em; }
+.reveal h2 { font-size: 1.9em; }
+.reveal h3 { font-size: 1.4em; color: var(--db-sky); }
+
+.reveal p, .reveal li { line-height: 1.7; font-weight: 300; }
+.reveal strong { color: var(--db-pure); font-weight: 600; }
+.reveal em {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--db-sky);
+}
+
+.accent-line {
+  width: 60px; height: 3px;
+  background: linear-gradient(90deg, var(--db-blue), var(--db-sky));
+  border: none; margin: 0 0 1.2em 0; border-radius: 2px;
+}
+
+.reveal pre {
+  background: rgba(12, 27, 46, 0.7);
+  border: 1px solid rgba(74, 144, 226, 0.2);
+  border-radius: 10px;
+  padding: 20px 24px;
+  font-size: 0.62em;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(74,144,226,0.1);
+  backdrop-filter: blur(10px);
+  margin: 0.8em 0;
+  width: 100%; box-sizing: border-box;
+}
+.reveal code { font-family: var(--font-mono); font-size: 0.92em; }
+.reveal pre code { color: var(--db-text); line-height: 1.6; max-height: 480px; }
+.kw { color: #c792ea; }
+.fn { color: #82aaff; }
+.st { color: #c3e88d; }
+.cm { color: #546e7a; font-style: italic; }
+.nb { color: #f78c6c; }
+
+.reveal :not(pre) > code {
+  background: rgba(74, 144, 226, 0.15);
+  padding: 2px 8px; border-radius: 4px;
+  color: var(--db-sky); font-size: 0.88em;
+}
+
+.reveal ul, .reveal ol { margin-left: 0; padding-left: 1.2em; }
+.reveal li { margin-bottom: 0.5em; }
+.reveal li::marker { color: var(--db-blue); }
+
+.reveal table {
+  border-collapse: separate; border-spacing: 0;
+  width: 100%; font-size: 0.85em;
+  border-radius: 8px; overflow: hidden; margin: 0.8em 0;
+}
+.reveal table th {
+  background: var(--db-navy); color: var(--db-pure);
+  padding: 12px 18px; text-align: left;
+  font-weight: 600; font-size: 0.9em;
+}
+.reveal table td {
+  padding: 10px 18px;
+  border-bottom: 1px solid rgba(74,144,226,0.12);
+  color: var(--db-text);
+}
+.reveal table tr:nth-child(even) td { background: rgba(74,144,226,0.04); }
+
+.card-grid { display: grid; gap: 16px; margin: 1em 0; }
+.card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+.card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.card-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+.card {
+  background: rgba(30, 58, 95, 0.35);
+  border: 1px solid rgba(74, 144, 226, 0.18);
+  border-radius: 10px; padding: 20px 22px;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s, transform 0.3s;
+}
+.card:hover {
+  border-color: rgba(74, 144, 226, 0.45);
+  transform: translateY(-2px);
+}
+.card .card-label {
+  font-size: 0.7em; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--db-muted); margin-bottom: 6px;
+}
+.card .card-value {
+  font-family: var(--font-display);
+  font-size: 1.8em; color: var(--db-pure); line-height: 1.2;
+}
+.card .card-value.blue { color: var(--db-blue); }
+.card .card-value.green { color: var(--db-green); }
+.card .card-value.sky { color: var(--db-sky); }
+
+.flow-steps { display: flex; flex-direction: column; gap: 6px; margin: 0.8em 0; }
+.flow-step {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 16px;
+  background: rgba(30, 58, 95, 0.3);
+  border-left: 3px solid var(--db-blue);
+  border-radius: 0 8px 8px 0; font-size: 0.88em;
+}
+.flow-step .step-num {
+  flex-shrink: 0; width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--db-blue); color: var(--db-pure);
+  border-radius: 50%; font-size: 0.8em; font-weight: 700;
+}
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
+.two-col.wide-left { grid-template-columns: 1.3fr 1fr; }
+
+.file-tree {
+  font-family: var(--font-mono); font-size: 0.78em; line-height: 2;
+  background: rgba(12,27,46,0.6);
+  border: 1px solid rgba(74,144,226,0.15);
+  border-radius: 10px; padding: 18px 24px; color: var(--db-text);
+}
+.file-tree .dir { color: var(--db-blue); font-weight: 600; }
+.file-tree .file { color: var(--db-text); }
+.file-tree .note { color: var(--db-muted); }
+
+.title-slide {
+  display: flex !important; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+}
+.title-slide h1 {
+  font-size: 3.6em;
+  background: linear-gradient(135deg, var(--db-pure) 30%, var(--db-sky) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 0.15em;
+}
+.title-slide .subtitle {
+  font-size: 1.15em; color: var(--db-muted); font-weight: 300; margin-bottom: 2em;
+}
+.title-slide .brand-bar {
+  display: flex; align-items: center; gap: 16px; margin-top: 1em;
+}
+.title-slide .brand-dot {
+  width: 8px; height: 8px; background: var(--db-blue); border-radius: 50%;
+}
+.title-slide .brand-text {
+  font-size: 0.82em; color: var(--db-muted); letter-spacing: 0.05em;
+}
+
+.db-logo {
+  font-family: var(--font-display); font-size: 1.2em;
+  color: var(--db-blue); display: inline-flex; align-items: center; gap: 10px;
+}
+.db-logo .logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--db-blue), var(--db-sky));
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-body); font-weight: 700; font-size: 0.7em; color: var(--db-pure);
+}
+
+.section-divider {
+  display: flex !important; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+}
+.section-divider h2 { font-size: 2.6em; }
+.section-divider p { font-size: 1.1em; color: var(--db-muted); max-width: 500px; }
+
+.reveal .slide-number {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--db-muted); background: transparent; right: 24px; bottom: 16px;
+}
+.reveal .progress { height: 3px; color: var(--db-blue); }
+
+.callout {
+  background: rgba(74,144,226,0.08);
+  border-left: 3px solid var(--db-blue);
+  padding: 14px 20px; border-radius: 0 8px 8px 0;
+  margin: 0.8em 0; font-size: 0.92em;
+}
+.callout.green { border-left-color: var(--db-green); background: rgba(39,174,96,0.08); }
+
+.small { font-size: 0.82em; }
+.xsmall { font-size: 0.72em; color: var(--db-muted); }
+.mt-0 { margin-top: 0; }
+.text-center { text-align: center; }
+
+.corner-glow::after {
+  content: ''; position: absolute; top: -100px; right: -100px;
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(74,144,226,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.end-slide {
+  display: flex !important; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+}
+.end-slide h1 {
+  font-size: 4em;
+  background: linear-gradient(135deg, var(--db-pure) 0%, var(--db-sky) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ===== 1. TÍTULO ===== -->
+<section class="title-slide corner-glow" data-bg="gradient">
+  <div class="db-logo" style="margin-bottom: 2em;">
+    <span class="logo-icon">DB</span>
+    <span>DataByte</span>
+  </div>
+  <h1>Sistema de Estadísticas Escolares</h1>
+  <p class="subtitle">Escuela San Pascualin</p>
+  <div class="brand-bar">
+    <span class="brand-text">Proyecto Final</span>
+    <span class="brand-dot"></span>
+    <span class="brand-text">Principios de Programación 1</span>
+    <span class="brand-dot"></span>
+    <span class="brand-text">Gabriel — CENFOTEC</span>
+  </div>
+</section>
+
+<!-- ===== 2. CONTEXTO + REQUERIMIENTOS ===== -->
+<section class="corner-glow">
+  <h2>El Proyecto</h2>
+  <hr class="accent-line">
+  <p><strong>DataByte</strong> nos contrató para desarrollar una aplicación en Python que calcule estadísticas de edades para la <strong>Escuela San Pascualin</strong>.</p>
+  <div class="card-grid cols-3" style="margin-top:1em;">
+    <div class="card">
+      <div class="card-label">Datos</div>
+      <p class="small mt-0">Diccionario con <strong>nombre → edad</strong> de cada alumno</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Estadísticas</div>
+      <p class="small mt-0"><strong>Mayor, menor, promedio</strong> (1 decimal) y <strong>mediana</strong></p>
+    </div>
+    <div class="card">
+      <div class="card-label">Extras</div>
+      <p class="small mt-0">Funciones <code>def</code>, contraseña segura, menú, fecha/hora</p>
+    </div>
+  </div>
+  <div class="callout green" style="margin-top:0.8em;">
+    <strong>Solución:</strong> dos versiones — <code>proyecto_final.py</code> (consola, 286 líneas) y <code>proyecto_final_gui.py</code> (GUI profesional, 1200+ líneas). Ambas 100% Python estándar, <strong>cero librerías externas</strong>.
+  </div>
+</section>
+
+<!-- ===== 3. ARQUITECTURA ===== -->
+<section>
+  <h2>Arquitectura</h2>
+  <hr class="accent-line">
+  <div class="two-col">
+    <div>
+      <div class="file-tree">
+        <span class="dir">proyecto_final/</span><br>
+        ├── <span class="file">proyecto_final.py</span> <span class="note">← Consola</span><br>
+        ├── <span class="file">proyecto_final_gui.py</span> <span class="note">← GUI</span><br>
+        ├── <span class="file">README.md</span><br>
+        └── <span class="dir">reportes/</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="file">reporte_*.html</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;└── <span class="file">reporte_*.txt</span>
+      </div>
+      <p class="small" style="margin-top:1em;">Tecnologías: <strong>Python 3</strong>, <strong>tkinter/ttk</strong>, datetime, os, webbrowser, random, HTML+CSS</p>
+    </div>
+    <div>
+      <h3 style="margin-top:0;">3 Capas</h3>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <span class="step-num">1</span>
+          <span><strong>Lógica</strong> — Funciones puras de cálculo, reutilizadas en ambas versiones</span>
+        </div>
+        <div class="flow-step">
+          <span class="step-num">2</span>
+          <span><strong>Interfaz</strong> — 5 frames intercambiables en tkinter</span>
+        </div>
+        <div class="flow-step">
+          <span class="step-num">3</span>
+          <span><strong>Reportes</strong> — Generadores HTML y TXT con timestamp</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 4. FUNCIONES CLAVE (código combinado) ===== -->
+<section>
+  <h2>Funciones de Lógica</h2>
+  <hr class="accent-line">
+  <div class="two-col wide-left">
+    <div>
+<pre><code><span class="kw">def</span> <span class="fn">obtener_edad_mayor</span>(alumnos):
+    mayor = <span class="nb">-1</span>
+    nombre_mayor = <span class="st">""</span>
+    <span class="kw">for</span> nombre <span class="kw">in</span> alumnos:
+        <span class="kw">if</span> alumnos[nombre] > mayor:
+            mayor = alumnos[nombre]
+            nombre_mayor = nombre
+    <span class="kw">return</span> nombre_mayor, mayor
+
+<span class="kw">def</span> <span class="fn">calcular_promedio</span>(alumnos):
+    suma = <span class="nb">0</span>
+    cantidad = <span class="nb">0</span>
+    <span class="kw">for</span> nombre <span class="kw">in</span> alumnos:
+        suma += alumnos[nombre]
+        cantidad += <span class="nb">1</span>
+    <span class="kw">return</span> <span class="fn">round</span>(suma / cantidad, <span class="nb">1</span>)</code></pre>
+    </div>
+    <div>
+      <div class="callout" style="margin-top:0;">
+        <strong>Sin built-ins:</strong> implementamos <code>max</code>, <code>sum</code> y <code>len</code> manualmente para demostrar el algoritmo. El return múltiple devuelve nombre y edad juntos.
+      </div>
+      <div class="callout" style="margin-top:0.6em;">
+        <strong><code>round(promedio, 1)</code></strong> — el cliente pidió exactamente un decimal.
+      </div>
+      <p class="small" style="margin-top:1em;">Mismo patrón para <code>obtener_edad_menor</code> y <code>validar_contrasena</code>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 5. MEDIANA ===== -->
+<section>
+  <h2>Cálculo de la Mediana</h2>
+  <hr class="accent-line">
+  <div class="two-col wide-left">
+    <div>
+<pre><code><span class="kw">def</span> <span class="fn">calcular_mediana</span>(alumnos):
+    edades = []
+    <span class="kw">for</span> nombre <span class="kw">in</span> alumnos:
+        edades.append(alumnos[nombre])
+    edades.sort()
+
+    cantidad = <span class="fn">len</span>(edades)
+    mitad = cantidad // <span class="nb">2</span>
+
+    <span class="kw">if</span> cantidad % <span class="nb">2</span> == <span class="nb">1</span>:
+        <span class="kw">return</span> edades[mitad]             <span class="cm"># Impar</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> (edades[mitad-<span class="nb">1</span>] + edades[mitad]) / <span class="nb">2</span>  <span class="cm"># Par</span></code></pre>
+    </div>
+    <div>
+      <div class="card-grid cols-2" style="margin-top:0;">
+        <div class="card" style="padding:14px 16px;">
+          <div class="card-label">Impar (n=5)</div>
+          <p class="small mt-0" style="font-family:var(--font-mono);">[7,8,<strong style="color:var(--db-blue);">9</strong>,10,12]</p>
+          <div class="card-value blue" style="font-size:1.3em;">Mediana: 9</div>
+        </div>
+        <div class="card" style="padding:14px 16px;">
+          <div class="card-label">Par (n=4)</div>
+          <p class="small mt-0" style="font-family:var(--font-mono);">[7,<strong style="color:var(--db-green);">8</strong>,<strong style="color:var(--db-green);">10</strong>,12]</p>
+          <div class="card-value green" style="font-size:1.3em;">Mediana: 9.0</div>
+        </div>
+      </div>
+      <p class="small" style="margin-top:0.8em;"><code>%2==1</code> detecta impar → valor central directo. Par → promedio de los dos centrales.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 6. GUI: ARQUITECTURA + PANTALLAS ===== -->
+<section>
+  <h2>Interfaz Gráfica: 5 Pantallas</h2>
+  <hr class="accent-line">
+  <div class="two-col wide-left">
+    <div>
+<pre><code>frames = {}
+
+<span class="kw">def</span> <span class="fn">mostrar_frame</span>(nombre):
+    <span class="kw">for</span> key <span class="kw">in</span> frames:
+        frames[key].pack_forget()
+    frames[nombre].pack(fill=<span class="st">"both"</span>, expand=<span class="nb">True</span>)</code></pre>
+      <div class="callout" style="margin-top:1em;">
+        Patrón <em>State Machine UI</em> — cada pantalla es un Frame. Cambiar = ocultar todos, mostrar uno.
+      </div>
+      <p class="small" style="margin-top:0.8em;">Paleta corporativa con tema <code>"clam"</code> de ttk:</p>
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <div style="width:30px;height:30px;border-radius:6px;background:#1e3a5f;"></div>
+        <div style="width:30px;height:30px;border-radius:6px;background:#4a90e2;"></div>
+        <div style="width:30px;height:30px;border-radius:6px;background:#f5f7fa;"></div>
+        <div style="width:30px;height:30px;border-radius:6px;background:#27ae60;"></div>
+        <div style="width:30px;height:30px;border-radius:6px;background:#e74c3c;"></div>
+      </div>
+    </div>
+    <div>
+      <div class="flow-steps">
+        <div class="flow-step"><span class="step-num">1</span><span><strong>Bienvenida</strong> — Logo + reloj en vivo con <code>after(1000)</code></span></div>
+        <div class="flow-step"><span class="step-num">2</span><span><strong>Registro</strong> — Contraseña con checklist visual en tiempo real</span></div>
+        <div class="flow-step"><span class="step-num">3</span><span><strong>Login</strong> — 3 intentos máximo, luego bloqueo total</span></div>
+        <div class="flow-step"><span class="step-num">4</span><span><strong>Ingreso</strong> — Formulario + tabla Treeview en vivo</span></div>
+        <div class="flow-step"><span class="step-num">5</span><span><strong>Dashboard</strong> — Menú lateral + cards estilo SPA</span></div>
+      </div>
+      <p class="small" style="margin-top:0.8em;">Todos los formularios responden a <strong>ENTER</strong> para navegación por teclado.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 7. FEATURES CLAVE DE LA GUI ===== -->
+<section>
+  <h2>Funcionalidades Destacadas</h2>
+  <hr class="accent-line">
+  <div class="card-grid cols-2" style="margin-top:0.5em;">
+    <div class="card">
+      <div class="card-label">Reloj en vivo</div>
+<pre style="margin:8px 0 0;padding:12px 16px;font-size:0.58em;"><code><span class="kw">def</span> <span class="fn">actualizar_reloj</span>():
+    reloj_var.set(datetime.now().strftime(<span class="st">"%H:%M:%S"</span>))
+    ventana.after(<span class="nb">1000</span>, actualizar_reloj)</code></pre>
+      <p class="xsmall mt-0"><code>after()</code> en vez de <code>sleep()</code> — no bloquea la GUI</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Validación en tiempo real</div>
+<pre style="margin:8px 0 0;padding:12px 16px;font-size:0.58em;"><code>entry_pwd.bind(<span class="st">"&lt;KeyRelease&gt;"</span>, actualizar_checklist)
+<span class="cm"># Cada tecla re-valida y colorea verde/rojo</span></code></pre>
+      <p class="xsmall mt-0">El usuario ve requisitos cumplidos al instante</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Dashboard con cards</div>
+<pre style="margin:8px 0 0;padding:12px 16px;font-size:0.58em;"><code><span class="kw">def</span> <span class="fn">crear_card</span>(parent, titulo, valor, color):
+    card = Frame(parent, bg=COLOR_BLANCO, bd=<span class="nb">1</span>)
+    Label(card, text=valor, font=(<span class="st">"Segoe UI"</span>,<span class="nb">22</span>,<span class="st">"bold"</span>))</code></pre>
+      <p class="xsmall mt-0">Patrón SPA: destruir y redibujar contenido</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Tabla en vivo</div>
+<pre style="margin:8px 0 0;padding:12px 16px;font-size:0.58em;"><code>tree = ttk.Treeview(columns=(<span class="st">"num"</span>,<span class="st">"nombre"</span>,<span class="st">"edad"</span>))
+tree.insert(<span class="st">""</span>, <span class="st">"end"</span>, values=(num, nombre, edad))</code></pre>
+      <p class="xsmall mt-0">Cada alumno aparece instantáneamente en la tabla</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 8. REPORTES ===== -->
+<section>
+  <h2>Generación de Reportes</h2>
+  <hr class="accent-line">
+  <div class="two-col">
+    <div>
+<pre><code><span class="kw">def</span> <span class="fn">generar_reporte_html</span>():
+    html = <span class="st">"""&lt;!DOCTYPE html&gt;
+    &lt;head&gt;&lt;style&gt;
+      header { background: linear-gradient(
+        135deg, #1e3a5f, #4a90e2); }
+      .card { border-left: 4px solid #4a90e2; }
+    &lt;/style&gt;&lt;/head&gt;"""</span>
+    <span class="kw">return</span> html
+
+<span class="kw">def</span> <span class="fn">guardar_reporte</span>(contenido, ext):
+    nombre = <span class="st">"reporte_"</span> + ahora.strftime(
+        <span class="st">"%Y-%m-%d_%H-%M-%S"</span>) + <span class="st">"."</span> + ext
+    archivo = <span class="fn">open</span>(ruta, <span class="st">"w"</span>, encoding=<span class="st">"utf-8"</span>)
+    archivo.write(contenido)
+    archivo.close()</code></pre>
+    </div>
+    <div>
+      <h3 style="margin-top:0;">¿Por qué HTML?</h3>
+      <ul class="small">
+        <li><strong>Cero librerías</strong> — reportlab/fpdf requieren pip</li>
+        <li><strong>CSS profesional</strong> — gradientes, cards, tablas estilizadas</li>
+        <li><strong>Ctrl+P → PDF</strong> desde cualquier navegador</li>
+        <li><strong>Universal</strong> — cualquier sistema lo abre</li>
+      </ul>
+      <div class="callout" style="margin-top:0.8em;">
+        Cada reporte se guarda con <strong>timestamp único</strong> — nunca se sobrescriben. También se genera un <strong>TXT</strong> como respaldo.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 9. VALIDACIONES ===== -->
+<section>
+  <h2>Validaciones</h2>
+  <hr class="accent-line">
+  <table>
+    <thead>
+      <tr><th>Entrada</th><th>Validación</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Contraseña</strong></td><td>8+ caracteres, mayúscula, minúscula, número, símbolo especial</td></tr>
+      <tr><td><strong>Confirmación</strong></td><td>Debe coincidir exactamente con la contraseña original</td></tr>
+      <tr><td><strong>Login</strong></td><td>Máximo 3 intentos, luego la aplicación se bloquea</td></tr>
+      <tr><td><strong>Tamaño muestra</strong></td><td>Entero positivo, máximo 100 alumnos</td></tr>
+      <tr><td><strong>Nombre alumno</strong></td><td>No vacío, sin duplicados en el diccionario</td></tr>
+      <tr><td><strong>Edad</strong></td><td>Rango 4–18 años (edad escolar)</td></tr>
+      <tr><td><strong>Opción menú</strong></td><td>Rango 1–6 en versión consola</td></tr>
+    </tbody>
+  </table>
+  <p class="small" style="margin-top:0.6em;">Todas muestran mensajes de error específicos <strong>en español</strong>.</p>
+</section>
+
+<!-- ===== 10. MÉTRICAS + EXTRAS ===== -->
+<section>
+  <h2>Métricas del Proyecto</h2>
+  <hr class="accent-line">
+  <div class="card-grid cols-4" style="margin-top:0.3em;">
+    <div class="card text-center">
+      <div class="card-value blue">286</div>
+      <div class="card-label">líneas consola</div>
+    </div>
+    <div class="card text-center">
+      <div class="card-value blue">1200+</div>
+      <div class="card-label">líneas GUI</div>
+    </div>
+    <div class="card text-center">
+      <div class="card-value sky">5</div>
+      <div class="card-label">pantallas</div>
+    </div>
+    <div class="card text-center" style="border-color:rgba(39,174,96,0.5);">
+      <div class="card-value green">100%</div>
+      <div class="card-label">requerimientos</div>
+    </div>
+  </div>
+  <h3 style="margin-top:1em;">Extras que superan el requerimiento</h3>
+  <div class="two-col" style="gap:20px;">
+    <ul class="small">
+      <li>GUI profesional con dashboard empresarial</li>
+      <li>Reloj en vivo + validación visual en tiempo real</li>
+      <li>Tabla de alumnos con actualización instantánea</li>
+      <li>Navegación completa por teclado (ENTER)</li>
+    </ul>
+    <ul class="small">
+      <li>Reportes automáticos HTML + TXT con timestamp</li>
+      <li>Conversión a PDF desde el navegador</li>
+      <li>Botón de datos de ejemplo para pruebas rápidas</li>
+      <li>Cero dependencias — solo Python estándar</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 11. DEMO ===== -->
+<section class="section-divider" data-bg="navy">
+  <h2>Demostración en Vivo</h2>
+  <hr class="accent-line" style="margin:0 auto 1em;">
+  <div class="flow-steps" style="max-width:480px;text-align:left;">
+    <div class="flow-step"><span class="step-num">1</span><span>Bienvenida con reloj en vivo</span></div>
+    <div class="flow-step"><span class="step-num">2</span><span>Registro + validación visual de contraseña</span></div>
+    <div class="flow-step"><span class="step-num">3</span><span>Login con intentos limitados</span></div>
+    <div class="flow-step"><span class="step-num">4</span><span>Ingreso de alumnos (manual + demo)</span></div>
+    <div class="flow-step"><span class="step-num">5</span><span>Dashboard con todas las estadísticas</span></div>
+    <div class="flow-step"><span class="step-num">6</span><span>Generación de reporte HTML → PDF</span></div>
+  </div>
+</section>
+
+<!-- ===== 12. CONCLUSIÓN ===== -->
+<section>
+  <h2>Conclusión</h2>
+  <hr class="accent-line">
+  <p style="font-size:1.05em;max-width:700px;">El proyecto cumple <strong>al 100% los requerimientos</strong> del cliente DataByte y añade una capa profesional de interfaz y reportería que hace la solución <em>lista para producción</em>.</p>
+  <div class="card-grid cols-4" style="margin-top:1.2em;">
+    <div class="card text-center">
+      <div class="card-value sky" style="font-size:1.2em;">Legible</div>
+      <p class="xsmall mt-0">Nombres en español, código claro</p>
+    </div>
+    <div class="card text-center">
+      <div class="card-value sky" style="font-size:1.2em;">Mantenible</div>
+      <p class="xsmall mt-0">Funciones pequeñas, una responsabilidad</p>
+    </div>
+    <div class="card text-center">
+      <div class="card-value sky" style="font-size:1.2em;">Portable</div>
+      <p class="xsmall mt-0">Cero dependencias externas</p>
+    </div>
+    <div class="card text-center">
+      <div class="card-value sky" style="font-size:1.2em;">Extensible</div>
+      <p class="xsmall mt-0">Lógica separada de interfaz</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 13. GRACIAS ===== -->
+<section class="end-slide" data-bg="gradient">
+  <div class="db-logo" style="margin-bottom:2em;">
+    <span class="logo-icon">DB</span>
+    <span>DataByte</span>
+  </div>
+  <h1>Gracias</h1>
+  <p style="color:var(--db-muted);font-size:1.1em;margin-bottom:2em;">¿Preguntas?</p>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+    <span class="brand-text" style="font-size:0.9em;color:var(--db-text);">Gabriel — CENFOTEC</span>
+    <span class="brand-text" style="font-size:0.82em;color:var(--db-muted);">Proyecto Final — Principios de Programación 1</span>
+    <span class="brand-text" style="font-size:0.82em;color:var(--db-muted);">Fecha de entrega: 21 de abril, 2026</span>
+  </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+<script>
+Reveal.initialize({
+  width: 1100,
+  height: 700,
+  margin: 0,
+  hash: true,
+  slideNumber: 'c/t',
+  showSlideNumber: 'all',
+  transition: 'slide',
+  transitionSpeed: 'default',
+  backgroundTransition: 'fade',
+  center: false,
+  controls: true,
+  controlsLayout: 'edges',
+  progress: true,
+  keyboard: true,
+  overview: true,
+});
+document.querySelectorAll('section[data-bg]').forEach(function(slide) {
+  var bg = slide.getAttribute('data-bg');
+  if (bg === 'gradient') slide.style.background = 'linear-gradient(145deg, #0c1b2e 0%, #112240 50%, #1e3a5f 100%)';
+  else if (bg === 'navy') slide.style.background = 'linear-gradient(160deg, #1e3a5f 0%, #1a3050 100%)';
+  else if (bg === 'accent') slide.style.background = 'linear-gradient(135deg, #4a90e2 0%, #1e3a5f 100%)';
+});
+</script>
+</body>
+</html>
